@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monitor mocy elektrycznej w Polsce w czasie rzeczywistym. Dane z PSE S.A. odświeżane co 5 minut z interaktywną mapą elektrowni.">
+    <title>Moc Elektryczna w Polsce — Monitor na żywo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Animated background -->
+        <div class="bg-grid"></div>
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+        <div class="bg-glow bg-glow-3"></div>
+
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="18" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                        <path d="M20 6 L24 18 L16 22 L22 34" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#7c3aed"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="logo-text">
+                        <h1>Moc Elektryczna</h1>
+                        <span class="logo-subtitle">Polska — Dane na żywo z PSE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Łączenie...</span>
+                </div>
+                <div class="last-update" id="lastUpdate">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>—</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main stats bar -->
+        <section class="stats-bar" id="statsBar">
+            <div class="stat-card stat-demand" id="statDemand">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Zapotrzebowanie</span>
+                    <span class="stat-value" id="valueDemand">—</span>
+                    <span class="stat-unit">GW</span>
+                </div>
+            </div>
+            <div class="stat-card stat-generation" id="statGeneration">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="6" width="20" height="12" rx="2"/>
+                        <line x1="6" y1="2" x2="6" y2="6"/>
+                        <line x1="18" y1="2" x2="18" y2="6"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Generacja</span>
+                    <span class="stat-value" id="valueGeneration">—</span>
+                    <span class="stat-unit">GW</span>
+                </div>
+            </div>
+            <div class="stat-card stat-wind" id="statWind">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Wiatr</span>
+                    <span class="stat-value" id="valueWind">—</span>
+                    <span class="stat-unit">GW</span>
+                </div>
+            </div>
+            <div class="stat-card stat-solar" id="statSolar">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Fotowoltaika</span>
+                    <span class="stat-value" id="valueSolar">—</span>
+                    <span class="stat-unit">GW</span>
+                </div>
+            </div>
+            <div class="stat-card stat-exchange" id="statExchange">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="17 1 21 5 17 9"/>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                        <polyline points="7 23 3 19 7 15"/>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Wymiana</span>
+                    <span class="stat-value" id="valueExchange">—</span>
+                    <span class="stat-unit">GW</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main content: map + chart -->
+        <main class="main-content">
+            <!-- Map section -->
+            <section class="map-section" id="mapSection">
+                <div class="section-header">
+                    <h2>Mapa Elektrowni w Polsce</h2>
+                    <div class="map-legend" id="mapLegend">
+                        <div class="legend-item">
+                            <span class="legend-dot legend-coal"></span> Węgiel
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot legend-gas"></span> Gaz
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot legend-wind"></span> Wiatr
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot legend-solar"></span> Słońce
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot legend-hydro"></span> Woda
+                        </div>
+                    </div>
+                </div>
+                <div class="map-container" id="mapContainer">
+                    <!-- SVG map rendered by JS -->
+                </div>
+            </section>
+
+            <!-- Right panel: chart + energy mix -->
+            <aside class="side-panel">
+                <section class="chart-section" id="chartSection">
+                    <div class="section-header">
+                        <h2>Przebieg mocy dzisiaj</h2>
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        <canvas id="powerChart"></canvas>
+                    </div>
+                </section>
+
+                <section class="mix-section" id="mixSection">
+                    <div class="section-header">
+                        <h2>Mix energetyczny</h2>
+                    </div>
+                    <div class="mix-bars" id="mixBars">
+                        <!-- Rendered by JS -->
+                    </div>
+                </section>
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer" id="footer">
+            <span>Dane: <a href="https://www.pse.pl" target="_blank" rel="noopener">PSE S.A.</a> — API raporty.pse.pl</span>
+            <span>Odświeżanie co 5 minut</span>
+            <span id="nextRefresh">Następne odświeżenie: —</span>
+        </footer>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="map-tooltip" id="mapTooltip" style="display:none;"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
