@@ -200,6 +200,27 @@
     const lastUpdateEl = $id('lastUpdate').querySelector('span:last-child');
     const nextRefreshEl = $id('nextRefresh');
 
+    // ─── THEME TOGGLE ────────────────────────
+    const themeToggle = $id('themeToggle');
+    const THEME_KEY = 'pse-monitor-theme';
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_KEY, theme);
+    }
+
+    // Load saved theme (default = dark)
+    const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        // Re-render chart because canvas uses hardcoded colors
+        renderChart();
+    });
+
     // ─── COORDINATE MAPPING ───────────────────
     // Poland bounding box approx: lat 49.0–54.9, lon 14.1–24.2
     const MAP_BOUNDS = { latMin: 48.8, latMax: 55.2, lonMin: 13.8, lonMax: 24.5 };
@@ -351,8 +372,14 @@
 
         ctx.clearRect(0, 0, W, H);
 
+        // Get theme-aware colors from CSS variables
+        const computedStyle = getComputedStyle(document.documentElement);
+        const chartTextColor = computedStyle.getPropertyValue('--chart-text').trim() || '#64748b';
+        const chartLegendColor = computedStyle.getPropertyValue('--chart-legend-text').trim() || '#94a3b8';
+        const chartGridColor = computedStyle.getPropertyValue('--chart-grid').trim() || 'rgba(99,102,241,0.08)';
+
         if (chartData.labels.length < 2) {
-            ctx.fillStyle = '#64748b';
+            ctx.fillStyle = chartTextColor;
             ctx.font = '13px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Oczekiwanie na dane...', W / 2, H / 2);
@@ -373,7 +400,7 @@
         function toY(v) { return PAD.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH; }
 
         // Grid lines
-        ctx.strokeStyle = 'rgba(99,102,241,0.08)';
+        ctx.strokeStyle = chartGridColor;
         ctx.lineWidth = 1;
         const gridSteps = 5;
         for (let i = 0; i <= gridSteps; i++) {
@@ -384,14 +411,14 @@
             ctx.lineTo(W - PAD.right, y);
             ctx.stroke();
 
-            ctx.fillStyle = '#64748b';
+            ctx.fillStyle = chartTextColor;
             ctx.font = '10px JetBrains Mono, monospace';
             ctx.textAlign = 'right';
             ctx.fillText(val.toFixed(1), PAD.left - 6, y + 3.5);
         }
 
         // X labels
-        ctx.fillStyle = '#64748b';
+        ctx.fillStyle = chartTextColor;
         ctx.font = '9px JetBrains Mono, monospace';
         ctx.textAlign = 'center';
         const labelEvery = Math.max(1, Math.floor(chartData.labels.length / 12));
@@ -452,7 +479,7 @@
         legends.forEach(l => {
             ctx.fillStyle = l.color;
             ctx.fillRect(lx, 8, 14, 3);
-            ctx.fillStyle = '#94a3b8';
+            ctx.fillStyle = chartLegendColor;
             ctx.textAlign = 'left';
             ctx.fillText(l.label, lx + 18, 13);
             lx += ctx.measureText(l.label).width + 34;
