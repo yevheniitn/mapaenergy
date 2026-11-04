@@ -369,7 +369,7 @@ a:hover {
     position: relative;
     z-index: 5;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 16px;
     padding: 20px 32px;
 }
@@ -392,6 +392,21 @@ a:hover {
     border-color: var(--border-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+/* Calculator stat card — 6th card in the bar */
+.stat-calculator {
+    cursor: pointer;
+}
+
+.stat-calculator .stat-icon {
+    background: linear-gradient(135deg, #f43f5e, #f59e0b);
+}
+
+.stat-value-sm {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    font-family: var(--font-body) !important;
 }
 
 .stat-icon {
