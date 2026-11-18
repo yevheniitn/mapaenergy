@@ -885,11 +885,14 @@ a:hover {
 
 .city-marker {
     cursor: pointer;
-    transition: transform 0.2s;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.3s ease-out, filter 0.3s ease-out;
 }
 
 .city-marker:hover {
-    transform: scale(1.15);
+    transform: scale(1.2);
+    filter: brightness(1.2);
 }
 
 .city-pulse {
